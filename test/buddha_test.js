@@ -10,4 +10,4 @@ vows.describe('buddha').addBatch({
             assert.equal(check, true);
         }
     }
-}).run();
+}).export(module);
