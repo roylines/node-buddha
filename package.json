@@ -15,7 +15,7 @@
     "zendesk"
   ],
 	"dependencies": {
-    "async": "0.1.x",
+    "async": "0.1.x"
   },
   "devDependencies" : {
   	"should" : "0.5.x",
