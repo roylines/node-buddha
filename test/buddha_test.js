@@ -2,7 +2,8 @@ var vows = require('vows'),
     assert = require('assert'),
     buddha = require('../lib/buddha.js');
 
-vows.describe('testing buddha test credentials').addBatch({
+vows.describe('buddha')
+.addBatch({
     'with valid credentials': {
         topic: { 
             email: "a@a.a",
@@ -22,6 +23,19 @@ vows.describe('testing buddha test credentials').addBatch({
             teardown : function(b) {
                 b.setCredentials(null, null);
             }            
+        },
+        'calling setOnBehalfOf' : {
+            topic: function(credentials) {
+                buddha.setOnBehalfOf(credentials.email);
+                return buddha;
+            },
+            'should set onBehalfOf' : function(b) {                
+                assert.equal(b.onBehalfOf, "a@a.a");
+            },
+            teardown : function(b) {
+                b.setOnBehalfOf(null);
+            }            
         }
+
     }
 }).export(module);
