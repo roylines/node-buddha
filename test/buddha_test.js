@@ -5,13 +5,17 @@ var vows = require('vows'),
 vows.describe('buddha').addBatch({
   'with valid credentials': {
     topic: {
+      host: "thehost",
       email: "a@a.a",
       password: "PASSWORD"
     },
     'calling setCredentials': {
       topic: function(credentials) {
-        buddha.setCredentials(credentials.email, credentials.password);
+        buddha.setCredentials(credentials.host, credentials.email, credentials.password);
         return buddha;
+      },
+      'should set host': function(b) {
+        assert.equal(b.host, "thehost");
       },
       'should set email': function(b) {
         assert.equal(b.email, "a@a.a");
@@ -20,7 +24,7 @@ vows.describe('buddha').addBatch({
         assert.equal(b.password, "PASSWORD");
       },
       teardown: function(b) {
-        b.setCredentials(null, null);
+        b.resetCredentials();
       }
     },
     'calling setOnBehalfOf': {
@@ -37,7 +41,7 @@ vows.describe('buddha').addBatch({
     },
     'after setting the credentials': {
       topic: function(credentials) {
-        buddha.setCredentials(credentials.email, credentials.password);
+        buddha.setCredentials(credentials.host, credentials.email, credentials.password);
         return buddha;
       },
       'and calling getUsers': {
@@ -46,6 +50,9 @@ vows.describe('buddha').addBatch({
         },
         'should not error': function(error, data) {
           assert.isNull(error);
+        },
+        teardown: function(b) {
+          b.resetCredentials();
         }
       }
     }
