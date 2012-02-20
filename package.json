@@ -1,7 +1,7 @@
 {
     "name": "buddha",
-    "description": "Interface with zendesk.",
-    "version": "0.0.1",
+    "description": "Simple interface with zendesk (alpha).",
+    "version": "0.0.2",
     "licenses": [{
         "type": "MIT",
         "url": "https://github.com/roylines/node-buddha/raw/master/LICENSE"
