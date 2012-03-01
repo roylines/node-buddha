@@ -4,6 +4,15 @@ var assert = require('assert'),
     sinon = require('sinon'),
     vows = require('vows');
 
+var checkOptions = function(options){
+  assert.notEqual(options, null);
+  assert.equal(options.host, 'thehost');
+  assert.equal(options.port, 443);
+  assert.equal(options.auth, 'a@a.a:PASSWORD');
+  assert.equal(options.path, '/things.json');
+  assert.equal(options.method, 'GET');
+};
+
 vows.describe('buddha').addBatch({
   'with valid credentials': {
     topic: {
@@ -41,10 +50,12 @@ vows.describe('buddha').addBatch({
     },
     'after setting the credentials': {
       topic: function(credentials) {
+        sinon.stub(https, 'request');
         return buddha.setCredentials(credentials.host, credentials.email, credentials.password);
       },
       'and calling getEntities when request fails': {
         topic: function(b) {
+          https.request.reset();
           var request = {
            on: function(e, c) {
             this.c = c;
@@ -54,29 +65,61 @@ vows.describe('buddha').addBatch({
            }
           };
 
-          var stubRequest = sinon.stub(https, 'request');
-          stubRequest.returns(request);
+          https.request.returns(request);
           b.getEntities('thing', this.callback);
         },
         'should have expected options': function(error, data) {
           var options = https.request.args[0][0];
-          assert.notEqual(options, null);
-          assert.equal(options.host, 'thehost');
-          assert.equal(options.port, 443);
-          assert.equal(options.auth, 'a@a.a:PASSWORD');
-          assert.equal(options.path, '/things.json');
-          assert.equal(options.method, 'GET');
+          checkOptions(options);
         },
         'should error': function(error, data) {
           assert.equal(error, 'ERROR');
         },
         'should not return data': function(error, data) {
           assert.equal(data, null);
-        },
-        teardown: function() {
-          buddha.resetCredentials();
-          https.request.restore();
         }
+      },
+      'and calling getEntities when request returns 2 data parts': {
+        topic: function(b) {
+          https.request.reset();
+
+          var res = {};
+          res.setEncoding = function() {};
+          res.on = function(e, c) {
+            if(e === 'data') {
+              this.ondata = c;
+            }
+            if(e === 'close') {
+              this.ondata('{ "firstpart": "1", ');
+              this.ondata('  "secondpart": "2" }');
+              c();
+            }
+          };
+          var request = {
+           on: function() {},
+           end: function() {
+             https.request.yield(res);
+           }
+          };
+
+          https.request.returns(request);
+          b.getEntities('thing', this.callback);
+        },
+        'should have expected options': function(error, data) {
+          var options = https.request.args[0][0];
+          checkOptions(options);
+        },
+        'should not error': function(error, data) {
+          assert.equal(error, null);
+        },
+        'should return expected data': function(error, data) {
+          assert.notEqual(data, null);
+          assert.equal(JSON.stringify(data), JSON.stringify({ firstpart: '1', secondpart: '2'}));
+        }
+      },
+      teardown: function() {
+        https.request.restore();
+        buddha.resetCredentials();
       }
     }
   }
