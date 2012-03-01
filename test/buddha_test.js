@@ -39,6 +39,7 @@ vows.describe('buddha').addBatch({
         b.setOnBehalfOf(null);
       }
     },
+    /*
     'after setting the credentials': {
       topic: function(credentials) {
         buddha.setCredentials(credentials.host, credentials.email, credentials.password);
@@ -56,5 +57,6 @@ vows.describe('buddha').addBatch({
         }
       }
     }
+    */
   }
 }).export(module);
