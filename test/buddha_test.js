@@ -9,7 +9,7 @@ var checkOptions = function(options){
   assert.equal(options.host, 'thehost');
   assert.equal(options.port, 443);
   assert.equal(options.auth, 'a@a.a:PASSWORD');
-  assert.equal(options.path, '/things.json');
+  assert.equal(options.path, '/dir/thing.json&p=1');
   assert.equal(options.method, 'GET');
 };
 
@@ -66,7 +66,7 @@ vows.describe('buddha').addBatch({
           };
 
           https.request.returns(request);
-          b.getEntities('thing', this.callback);
+          b.getEntities('/dir/thing.json&p=1', this.callback);
         },
         'should have expected options': function(error, data) {
           var options = https.request.args[0][0];
@@ -82,7 +82,6 @@ vows.describe('buddha').addBatch({
       'and calling getEntities when request returns 2 data parts': {
         topic: function(b) {
           https.request.reset();
-
           var res = {};
           res.setEncoding = function() {};
           res.on = function(e, c) {
@@ -103,7 +102,7 @@ vows.describe('buddha').addBatch({
           };
 
           https.request.returns(request);
-          b.getEntities('thing', this.callback);
+          b.getEntities('/dir/thing.json&p=1', this.callback);
         },
         'should have expected options': function(error, data) {
           var options = https.request.args[0][0];
