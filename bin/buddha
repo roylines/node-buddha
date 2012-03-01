@@ -2,17 +2,20 @@
 
 var buddha = require('../lib/buddha.js');
 
-if(process.argv.length != 5) {
-  console.log('usage: node buddha host email password');
+if(process.argv.length != 6) {
+  console.log('usage: node buddha host email password <entity>');
   process.exit(1);
 }
 
 var host = process.argv[2];
 var email = process.argv[3];
 var password = process.argv[4];
+var entity = process.argv[5];
 
-buddha.setCredentials(host, email, password)
-      .getUsers(function(error, results) {
+buddha.setCredentials(host, email, password);
+switch(entity){
+  case 'user':
+      buddha.getUsers(function(error, results) {
         if(error) {
           console.log(error);
           process.exit(1);
@@ -20,3 +23,16 @@ buddha.setCredentials(host, email, password)
         console.log(results);
         process.exit(0);
       });
+    break;
+  case 'ticket':
+      buddha.getTickets(function(error, results) {
+        if(error) {
+          console.log(error);
+          process.exit(1);
+        }
+        console.log(results);
+        process.exit(0);
+      });
+    break;
+}
+
