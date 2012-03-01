@@ -1,6 +1,8 @@
-var vows = require('vows'),
-    assert = require('assert'),
-    buddha = require('../lib/buddha.js');
+var assert = require('assert'),
+    buddha = require('../lib/buddha.js'),
+    https = require('https'),
+    sinon = require('sinon'),
+    vows = require('vows');
 
 vows.describe('buddha').addBatch({
   'with valid credentials': {
@@ -36,25 +38,46 @@ vows.describe('buddha').addBatch({
       teardown: function(b) {
         b.setOnBehalfOf(null);
       }
-    }
-    /*
+    },
     'after setting the credentials': {
       topic: function(credentials) {
-        buddha.setCredentials(credentials.host, credentials.email, credentials.password);
-        return buddha;
+        return buddha.setCredentials(credentials.host, credentials.email, credentials.password);
       },
-      'and calling getUsers': {
+      'and calling getEntities when request fails': {
         topic: function(b) {
-          b.getUsers(this.callback);
+          var request = {
+           on: function(e, c) {
+            this.c = c;
+           },
+           end: function(){
+             this.c({ message: 'ERROR'});
+           }
+          };
+
+          var stubRequest = sinon.stub(https, 'request');
+          stubRequest.returns(request);
+          b.getEntities('thing', this.callback);
         },
-        'should not error': function(error, data) {
-          assert.isNull(error);
+        'should have expected options': function(error, data) {
+          var options = https.request.args[0][0];
+          assert.notEqual(options, null);
+          assert.equal(options.host, 'thehost');
+          assert.equal(options.port, 443);
+          assert.equal(options.auth, 'a@a.a:PASSWORD');
+          assert.equal(options.path, '/things.json');
+          assert.equal(options.method, 'GET');
         },
-        teardown: function(b) {
-          b.resetCredentials();
+        'should error': function(error, data) {
+          assert.equal(error, 'ERROR');
+        },
+        'should not return data': function(error, data) {
+          assert.equal(data, null);
+        },
+        teardown: function() {
+          buddha.resetCredentials();
+          https.request.restore();
         }
       }
     }
-    */
   }
 }).export(module);
