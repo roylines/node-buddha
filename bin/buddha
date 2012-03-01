@@ -11,13 +11,12 @@ var host = process.argv[2];
 var email = process.argv[3];
 var password = process.argv[4];
 
-buddha.setCredentials(host, email, password);
-
-buddha.getUsers(function(error, results) {
-  if(error) {
-    console.log(error);
-    process.exit(1);
-  }
-  console.log(results);
-  process.exit(0);
-});
+buddha.setCredentials(host, email, password)
+      .getUsers(function(error, results) {
+        if(error) {
+          console.log(error);
+          process.exit(1);
+        }
+        console.log(results);
+        process.exit(0);
+      });

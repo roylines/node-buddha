@@ -11,8 +11,7 @@ vows.describe('buddha').addBatch({
     },
     'calling setCredentials': {
       topic: function(credentials) {
-        buddha.setCredentials(credentials.host, credentials.email, credentials.password);
-        return buddha;
+        return buddha.setCredentials(credentials.host, credentials.email, credentials.password);
       },
       'should set host': function(b) {
         assert.equal(b.host, "thehost");
@@ -29,8 +28,7 @@ vows.describe('buddha').addBatch({
     },
     'calling setOnBehalfOf': {
       topic: function(credentials) {
-        buddha.setOnBehalfOf(credentials.email);
-        return buddha;
+        return buddha.setOnBehalfOf(credentials.email);
       },
       'should set onBehalfOf': function(b) {
         assert.equal(b.onBehalfOf, "a@a.a");
@@ -38,7 +36,7 @@ vows.describe('buddha').addBatch({
       teardown: function(b) {
         b.setOnBehalfOf(null);
       }
-    },
+    }
     /*
     'after setting the credentials': {
       topic: function(credentials) {
