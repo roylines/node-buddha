@@ -157,7 +157,6 @@ vows.describe('buddha')
       assert.equal(result, 'DATA');
     },
     'should call getEntities with correct path': function(err, result) {
-      console.log(buddha.getEntities.args);
       assert.ok(buddha.getEntities.calledWith('/rules/view.json?page=3'));
     },
     teardown: function() {

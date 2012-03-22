@@ -4,34 +4,31 @@ var buddha = require('../lib/buddha.js');
 var program = require('commander');
 
 program
-  .option('-h, --host [host]', 'host')
+  .option('-z, --zenhost [host]', 'zendesk host')
   .option('-e, --email [email]', 'email account')
   .option('-p, --password [password]', 'account password')
   .option('-t, --tickets [view]', 'view tickets')
+  .option('-p, --page [page]', 'page', 1)
   .option('-u, --users', 'view users')
   .parse(process.argv);
 
-console.log('querying: ' + program.host);
+console.log('setting credentials: ' + program.zenhost + ' ' + program.email + ' ' + program.password);
+buddha.setCredentials(program.zenhost, program.email, program.password);
 
-buddha.setCredentials(program.host, program.email, program.password);
+var handleResponse = function(error, results) {
+  if(error) {
+    console.log('error getting tickets: ' + error);
+    process.exit(1);
+  }
+  console.log('results: ' + JSON.stringify(results));
+  process.exit(0);
+};
 
 if(program.tickets) {
-  buddha.getTickets(function(error, results) {
-    if(error) {
-      console.log('error getting tickets: ' + error);
-      process.exit(1);
-    }
-    console.log('results: ' + results);
-    process.exit(0);
-  });
+  console.log('getting tickets...');
+  buddha.getTickets(program.tickets, program.page, handleResponse);
 }
 else if(program.users) {
-  buddha.getUsers(function(error, results) {
-    if(error) {
-      console.log('error: ' + error);
-      process.exit(1);
-    }
-    console.log('results: ' + results);
-    process.exit(0);
-  });
+  console.log('getting users...');
+  buddha.getUsers(handleResponse);
 }
