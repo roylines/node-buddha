@@ -144,4 +144,25 @@ vows.describe('buddha')
     }
   }
 })
+.addBatch({
+  'calling getTickets': {
+    topic: function() {
+      sinon.stub(buddha, 'getEntities').yields('ERR', 'DATA');
+      buddha.getTickets('view', '3', this.callback);
+    },
+    'should have expected error': function(err, result) {
+      assert.equal(err, 'ERR');
+    },
+    'should have expected result': function(err, result) {
+      assert.equal(result, 'DATA');
+    },
+    'should call getEntities with correct path': function(err, result) {
+      console.log(buddha.getEntities.args);
+      assert.ok(buddha.getEntities.calledWith('/rules/view.json?page=3'));
+    },
+    teardown: function() {
+      buddha.getEntities.restore();
+    }
+  }
+})
 .export(module);
