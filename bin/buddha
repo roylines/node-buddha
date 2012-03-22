@@ -8,7 +8,8 @@ program
   .option('-e, --email [email]', 'email account')
   .option('-p, --password [password]', 'account password')
   .option('-t, --tickets [view]', 'view tickets')
-  .option('-p, --page [page]', 'page', 1)
+  .option('-c, --ticketcount [view]', 'view ticket counts')
+  .option('-i, --page <n>', 'page', parseInt, 1)
   .option('-u, --users', 'view users')
   .parse(process.argv);
 
@@ -17,7 +18,7 @@ buddha.setCredentials(program.zenhost, program.email, program.password);
 
 var handleResponse = function(error, results) {
   if(error) {
-    console.log('error getting tickets: ' + error);
+    console.log('error ' + error);
     process.exit(1);
   }
   console.log('results: ' + JSON.stringify(results));
@@ -25,8 +26,12 @@ var handleResponse = function(error, results) {
 };
 
 if(program.tickets) {
-  console.log('getting tickets...');
+  console.log('getting tickets (page ' + program.page + ')...');
   buddha.getTickets(program.tickets, program.page, handleResponse);
+}
+else if(program.ticketcount) {
+  console.log('getting ticket count...');
+  buddha.getTicketCount(program.ticketcount, handleResponse);
 }
 else if(program.users) {
   console.log('getting users...');
