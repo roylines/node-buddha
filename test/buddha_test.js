@@ -13,7 +13,8 @@ var checkOptions = function(options){
   assert.equal(options.method, 'GET');
 };
 
-vows.describe('buddha').addBatch({
+vows.describe('buddha')
+.addBatch({
   'with valid credentials': {
     topic: {
       host: "thehost",
@@ -122,4 +123,25 @@ vows.describe('buddha').addBatch({
       }
     }
   }
-}).export(module);
+})
+.addBatch({
+  'calling getUsers': {
+    topic: function() {
+      sinon.stub(buddha, 'getEntities').yields('ERR', 'DATA');
+      buddha.getUsers(this.callback);
+    },
+    'should have expected error': function(err, result) {
+      assert.equal(err, 'ERR');
+    },
+    'should have expected result': function(err, result) {
+      assert.equal(result, 'DATA');
+    },
+    'should call getEntities with correct path': function(err, result) {
+      assert.ok(buddha.getEntities.calledWith('/users.json'));
+    },
+    teardown: function() {
+      buddha.getEntities.restore();
+    }
+  }
+})
+.export(module);
